@@ -20,7 +20,7 @@ export const findDecisionMakers = async (domains: string[]): Promise<any> => {
       },
       {
         headers: {
-          "X-Api-Token": config.prospeo.token,
+          "X-KEY": config.prospeo.token,
           "Content-Type": "application/json",
         },
       },
@@ -44,8 +44,9 @@ export const findDecisionMakers = async (domains: string[]): Promise<any> => {
       })
       .filter((prospect) => prospect.linkedinUrl !== "");
   } catch (error: any) {
-    throw new Error(
-      `Ocean.io execution dropped: ${error.response?.data?.detail || error.message}`,
-    );
+    const apiDetail =
+      error.response?.data?.filter_error || error.response?.data?.error_code;
+
+    throw new Error(`Prospeo execution dropped: ${apiDetail || error.message}`);
   }
 };
