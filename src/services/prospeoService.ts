@@ -27,6 +27,8 @@ export interface DiscoveredProspect {
 export const findDecisionMakers = async (
   domains: string[],
 ): Promise<DiscoveredProspect[]> => {
+  if (!domains || domains.length === 0) return [];
+
   try {
     const response = await axios.post<ProspeoSearchResponse>(
       `${config.prospeo.baseUrl}/search-person`,
