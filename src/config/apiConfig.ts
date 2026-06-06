@@ -6,4 +6,8 @@ export const config = {
     token: process.env.OCEANIO_API_TOKEN,
     baseUrl: "https://api.ocean.io",
   },
+  prospeo: {
+    token: process.env.PROSPEO_API_TOKEN,
+    baseUrl: "https://api.prospeo.io",
+  },
 };

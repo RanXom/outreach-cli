@@ -2,7 +2,7 @@ import axios from "axios";
 import { config } from "../config/apiConfig.js";
 
 interface OceanCompany {
-  domain: string;
+  domain: string | undefined;
 }
 
 export const fetchLookalikes = async (
