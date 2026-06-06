@@ -18,11 +18,13 @@ export interface Message {
   subject: string;
 }
 
-export interface BrevoResponse {
+export interface BrevoBatchResponse {
   messageIds: string[];
 }
 
-const sendOutreach = async (contacts: Contact[]): Promise<string[]> => {
+export const sendBatchOutreach = async (
+  contacts: Contact[],
+): Promise<string[]> => {
   if (!contacts || contacts.length === 0) return [];
 
   const message: Message[] = contacts.map((contact) => {
