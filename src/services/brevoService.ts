@@ -4,6 +4,8 @@ import { MessageVersion, BrevoBatchResponse, Contact } from "../types/index.js";
 
 export const sendBatchOutreach = async (
   contacts: Contact[],
+  customSubject?: string,
+  customHtmlBody?: string,
 ): Promise<string[]> => {
   if (!contacts || contacts.length === 0) return [];
 
@@ -15,20 +17,24 @@ export const sendBatchOutreach = async (
         firstName: firstName,
         company: contact.company,
       },
-      subject: `Optimizing engineering overhead visibility at ${contact.company}`, // TODO: replace this with and by taking personalized subject as function param
+      subject:
+        customSubject ||
+        `Software Engineering Opportunities - ${contact.company}`,
     };
   });
 
-  // TODO: replace this with personalized email from user input (passed in as function param)
-  const baseHtmlContent = `
-    <!DOCTYPE html>
+  const baseHtmlContent =
+    customHtmlBody ||
+    `
+     <!DOCTYPE html>
     <html>
     <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #222; max-width: 600px; margin: 0 auto;">
       <p>Hey {{params.firstName}},</p>
-      <p>Saw your work leading scaling execution choices over at <strong>{{params.company}}</strong>.</p>
-      <p>As engineering stacks expand, tracking seat bleed and phantom SaaS subscription overhead falls behind active sprint priorities instantly. We built a background automation layer at SubSpace that maps tech-stack overhead dynamically to eliminate unused seat costs with zero manual workflow disruption.</p>
-      <p>Are you open to a quick 5-minute deep-dive sync next Tuesday at 2 PM IST to audit your core visibility blocks?</p>
-      <p>Best,<br><strong>Saiyed Shizain</strong><br>Backend & Systems Engineering | SubSpace</p>
+      <p>I was recently tracking engineering and product scaling footprints over at <strong>{{params.company}}</strong>, and I wanted to reach out directly.</p>
+      <p>I am a self-driven B.Tech CSE student heavily focused on core backend architecture, distributed systems patterns, and cloud infrastructure operations. I spend my time building high-throughput infrastructure components (like custom CLI system logging utilities written in Rust and scalable microservice architectures using Java + Spring Boot).</p>
+      <p>Given your focus on product stability and system scaling execution speeds, I believe my technical focus and absolute dedication to system efficiency would make me an excellent fit for your engineering team as a Software Engineer Intern.</p>
+      <p>Are you open to a brief 5-minute chat sometime next week? I'd love to share some of the backend automation systems I've built and see how I can help ship high-quality code for your team.</p>
+      <p>Best regards,<br><strong>Saiyed Shizain</strong><br>Computer Science & Systems Engineering Student<br>GitHub: github.com/RanXom</p>
     </body>
     </html>
   `;
