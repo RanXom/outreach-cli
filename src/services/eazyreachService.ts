@@ -1,9 +1,26 @@
 import axios from "axios";
 import { config } from "../config/apiConfig.js";
 
+interface AuthTokenResponse {
+  status: string;
+  auth_token: string;
+  id: string;
+}
+
+interface EmailRecord {
+  email: string;
+  verification: "verified" | "probable";
+  source?: string;
+}
+
+interface LinkedinEmailsResponse {
+  status: string;
+  emails: EmailRecord[];
+}
+
 const fetchToken = async (): Promise<string> => {
   try {
-    const response = await axios.post(
+    const response = await axios.post<AuthTokenResponse>(
       `${config.eazyreach.baseUrl}/b2b/createAuthToken/`,
       {
         clientId: config.eazyreach.clientId,
@@ -38,7 +55,7 @@ export const fetchEmails = async (
   try {
     const authToken = await fetchToken();
 
-    const response = await axios.post(
+    const response = await axios.post<LinkedinEmailsResponse>(
       `${config.eazyreach.baseUrl}/b2b/linkedin-emails`,
       { linkedinUrl: linkedinUrl },
       {

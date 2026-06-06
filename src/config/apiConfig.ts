@@ -15,4 +15,9 @@ export const config = {
     clientSecret: process.env.EAZYREACH_CLIENT_SECRET || "",
     baseUrl: "https://api.superflow.run",
   },
+  brevo: {
+    apiKey: process.env.BREVO_API_KEY || "",
+    baseUrl: "https://api.brevo.com/v3",
+    senderEmail: "contact@shizain.me",
+  },
 };
