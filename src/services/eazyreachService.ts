@@ -16,7 +16,7 @@ const fetchToken = async (): Promise<string> => {
       },
     );
 
-    if (response.data?.status !== "success" && !response.data?.auth_token) {
+    if (response.data?.status !== "success" || !response.data?.auth_token) {
       throw new Error(
         "Superflow gateway rejected client credential verification properties",
       );
