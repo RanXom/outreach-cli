@@ -40,12 +40,16 @@ export const fetchLookalikes = async (
 export const sanitizeDomain = (company: OceanCompany): string | undefined => {
   if (!company.domain) return undefined;
 
+  if (!company.domain.includes(".")) return undefined;
+
   try {
     const urlString = company.domain.includes("://")
       ? company.domain
       : `https://${company.domain}`;
 
     const parsedUrl = new URL(urlString);
+
+    if (!parsedUrl.hostname.includes(".")) return undefined;
 
     return parsedUrl.hostname.replace(/^www\./, "");
   } catch {
