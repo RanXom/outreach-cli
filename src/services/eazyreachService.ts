@@ -1,22 +1,6 @@
 import axios from "axios";
 import { config } from "../config/apiConfig.js";
-
-interface AuthTokenResponse {
-  status: string;
-  auth_token: string;
-  id: string;
-}
-
-interface EmailRecord {
-  email: string;
-  verification: "verified" | "probable";
-  source?: string;
-}
-
-interface LinkedinEmailsResponse {
-  status: string;
-  emails: EmailRecord[];
-}
+import { AuthTokenResponse, LinkedinEmailsResponse } from "../types/index.js";
 
 const fetchToken = async (): Promise<string> => {
   try {

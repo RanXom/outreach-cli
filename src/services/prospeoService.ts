@@ -1,28 +1,6 @@
 import axios from "axios";
 import { config } from "../config/apiConfig.js";
-
-interface ProspeoSearchResponse {
-  error: boolean;
-  free?: boolean;
-  results?: Array<{
-    person: {
-      person_id: string;
-      full_name: string | null;
-      current_job_title: string | null;
-      linkedin_url: string | null;
-    };
-    company?: {
-      name: string;
-      domain: string;
-    };
-  }>;
-}
-
-export interface DiscoveredProspect {
-  name: string;
-  title: string;
-  linkedinUrl: string;
-}
+import { ProspeoSearchResponse, DiscoveredProspect } from "../types/index.js";
 
 export const findDecisionMakers = async (
   domains: string[],

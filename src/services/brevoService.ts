@@ -1,26 +1,6 @@
 import axios from "axios";
 import { config } from "../config/apiConfig.js";
-import { application, json } from "express";
-
-export interface Contact {
-  name: string;
-  title: string;
-  company: string;
-  email: string;
-}
-
-export interface MessageVersion {
-  to: Array<{ name: string; email: string }>;
-  params: {
-    firstName: string;
-    company: string;
-  };
-  subject: string;
-}
-
-export interface BrevoBatchResponse {
-  messageIds: string[];
-}
+import { MessageVersion, BrevoBatchResponse, Contact } from "../types/index.js";
 
 export const sendBatchOutreach = async (
   contacts: Contact[],

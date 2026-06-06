@@ -1,9 +1,6 @@
 import axios from "axios";
 import { config } from "../config/apiConfig.js";
-
-interface OceanCompany {
-  domain: string | undefined;
-}
+import { OceanCompany } from "../types/index.js";
 
 export const fetchLookalikes = async (
   seedDomain: string,
