@@ -1,9 +1,34 @@
 import axios from "axios";
 import { config } from "../config/apiConfig.js";
 
-export const findDecisionMakers = async (domains: string[]): Promise<any> => {
+interface ProspeoSearchResponse {
+  error: boolean;
+  free?: boolean;
+  results?: Array<{
+    person: {
+      person_id: string;
+      full_name: string | null;
+      current_job_title: string | null;
+      linkedin_url: string | null;
+    };
+    company?: {
+      name: string;
+      domain: string;
+    };
+  }>;
+}
+
+export interface DiscoveredProspect {
+  name: string;
+  title: string;
+  linkedinUrl: string;
+}
+
+export const findDecisionMakers = async (
+  domains: string[],
+): Promise<DiscoveredProspect[]> => {
   try {
-    const response = await axios.post(
+    const response = await axios.post<ProspeoSearchResponse>(
       `${config.prospeo.baseUrl}/search-person`,
       {
         page: 1,
