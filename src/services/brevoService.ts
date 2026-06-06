@@ -9,7 +9,7 @@ export interface Contact {
   email: string;
 }
 
-export interface Message {
+export interface MessageVersion {
   to: Array<{ name: string; email: string }>;
   params: {
     firstName: string;
@@ -27,7 +27,7 @@ export const sendBatchOutreach = async (
 ): Promise<string[]> => {
   if (!contacts || contacts.length === 0) return [];
 
-  const message: Message[] = contacts.map((contact) => {
+  const messageVersions: MessageVersion[] = contacts.map((contact) => {
     const firstName = contact.name.split(" ")[0] || "there";
     return {
       to: [{ email: contact.email, name: contact.name }],
@@ -54,12 +54,12 @@ export const sendBatchOutreach = async (
   `;
 
   try {
-    const response = await axios.post<BrevoResponse>(
+    const response = await axios.post<BrevoBatchResponse>(
       `${config.brevo.baseUrl}/smtp/email`,
       {
         sender: { name: "Shizain", email: config.brevo.senderEmail },
         htmlContent: baseHtmlContent,
-        message: message,
+        messageVersions: messageVersions,
       },
       {
         headers: {
