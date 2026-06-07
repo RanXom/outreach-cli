@@ -2,7 +2,11 @@ import axios from "axios";
 import { config } from "../config/apiConfig.js";
 import { AuthTokenResponse, LinkedinEmailsResponse } from "../types/index.js";
 
+let cachedToken: string | null = null;
+
 const fetchToken = async (): Promise<string> => {
+  if (cachedToken) return cachedToken;
+
   try {
     const response = await axios.post<AuthTokenResponse>(
       `${config.eazyreach.baseUrl}/b2b/createAuthToken/`,
@@ -23,12 +27,17 @@ const fetchToken = async (): Promise<string> => {
       );
     }
 
-    return response.data.auth_token;
+    cachedToken = response.data.auth_token;
+    return cachedToken;
   } catch (error: any) {
     throw new Error(
       `Superflow Token Generation Failed: ${error.response?.data?.message || error.message}`,
     );
   }
+};
+
+export const resetToken = (): void => {
+  cachedToken = null;
 };
 
 export const fetchEmails = async (
