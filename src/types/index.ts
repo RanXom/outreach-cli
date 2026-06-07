@@ -1,6 +1,10 @@
 // Ocean.io service
 export interface OceanCompany {
   domain: string | undefined;
+  name?: string;
+  companySize?: string;
+  primaryCountry?: string;
+  industries?: string[];
 }
 
 // Prospeo service
@@ -8,27 +12,37 @@ export interface DiscoveredProspect {
   name: string;
   title: string;
   linkedinUrl: string;
+  company?: string;
+  companyDomain?: string;
 }
 
-interface ProspeoPersonPayload {
-  person_id: string;
+export interface ProspeoPersonPayload {
+  person_id?: string;
   full_name: string | null;
   current_job_title: string | null;
   linkedin_url: string | null;
 }
 
-interface ProspeoCompanyPayload {
+export interface ProspeoCompanyPayload {
   name: string;
   domain: string;
 }
 
 export interface ProspeoSearchResponse {
   error: boolean;
+  error_code?: string;
+  filter_error?: string;
   free?: boolean;
   results?: Array<{
     person: ProspeoPersonPayload;
     company?: ProspeoCompanyPayload;
   }>;
+  pagination?: {
+    current_page: number;
+    per_page: number;
+    total_page: number;
+    total_count: number;
+  };
 }
 
 // Eazyreach service

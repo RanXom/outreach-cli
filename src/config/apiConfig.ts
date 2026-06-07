@@ -19,5 +19,6 @@ export const config = {
     apiKey: process.env.BREVO_API_KEY || "",
     baseUrl: "https://api.brevo.com/v3",
     senderEmail: "contact@shizain.me",
+    senderName: "Shizain",
   },
 };
