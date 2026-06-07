@@ -1,20 +1,6 @@
 import axios from "axios";
 import { config } from "../config/apiConfig.js";
-import { DiscoveredProspect } from "../types/index.js";
-
-interface EnrichPersonResponse {
-  error: boolean;
-  error_code?: string;
-  free_enrichment?: boolean;
-  person?: {
-    email?: {
-      status: string;
-      revealed: boolean;
-      email: string;
-      verification_method?: string;
-    };
-  };
-}
+import { DiscoveredProspect, EnrichPersonResponse } from "../types/index.js";
 
 const delay = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
