@@ -19,7 +19,7 @@ export const findDecisionMakers = async (
             },
           },
           person_seniority: {
-            include: ["C-Suite", "Vice President"],
+            include: ["C-Level", "VP"],
           },
         },
       },
@@ -38,16 +38,26 @@ export const findDecisionMakers = async (
 
     const searchResults = response.data?.results || [];
 
-    return searchResults
-      .map((item) => {
-        const p = item.person;
-        return {
-          name: p.full_name || "Executive Target",
-          title: p.current_job_title || "Leadership Matrix Target",
-          linkedinUrl: p.linkedin_url || "",
-        };
-      })
-      .filter((prospect) => prospect.linkedinUrl !== "");
+    const seen = new Set<string>();
+
+    return searchResults.flatMap((item) => {
+      const p = item.person;
+      const linkedinUrl = p.linkedin_url || "";
+
+      if (!linkedinUrl) return [];
+
+      const normalizedUrl = linkedinUrl.toLowerCase();
+      if (seen.has(normalizedUrl)) return [];
+      seen.add(normalizedUrl);
+
+      return [{
+        name: p.full_name || "Executive Target",
+        title: p.current_job_title || "Leadership Matrix Target",
+        linkedinUrl,
+        company: item.company?.name,
+        companyDomain: item.company?.domain,
+      }];
+    });
   } catch (error: any) {
     const apiDetail =
       error.response?.data?.filter_error || error.response?.data?.error_code;
