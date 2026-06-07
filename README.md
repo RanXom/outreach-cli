@@ -16,6 +16,7 @@ Outreach CLI is a lightweight, fully automated command-line utility designed to 
 ## Overview
 
 The application is designed to operate autonomously with zero manual intervention required until the final safety checkpoint. By providing a single seed domain, the CLI will:
+
 1. Source lookalike companies.
 2. Identify target decision-makers (C-Level and VP).
 3. Resolve verified B2B email addresses.
@@ -25,7 +26,7 @@ The application is designed to operate autonomously with zero manual interventio
 
 - **Lookalike Discovery:** Integrates with the Ocean.io API to identify companies sharing similar firmographic traits with the provided seed domain.
 - **Decision-Maker Sourcing:** Utilizes the Prospeo API to locate key executives within target organizations.
-- **Email Resolution:** Leverages the Eazyreach (Superflow) API to resolve LinkedIn profiles to verified corporate email addresses. Implements token caching for optimized API utilization.
+- **Email Resolution:** Leverages the Prospeo's Enrich Person API to resolve LinkedIn profiles to verified corporate email addresses.
 - **Automated Dispatch:** Uses Brevo (Sendinblue) to execute batch email dispatch using dynamically injected templates.
 - **Resilient Architecture:** Implements robust error handling, cross-stage data deduplication (using strict `Set` evaluations), and payload chunking (respecting Brevo's 1,000 recipient per-request limit) to ensure API stability and preserve credits.
 
@@ -42,18 +43,19 @@ Ensure you have [Node.js](https://nodejs.org/) installed (v18 or higher recommen
 
 - Ocean.io API Token
 - Prospeo API Token
-- Eazyreach Client ID & Client Secret
 - Brevo API Key
 
 ## Installation
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/RanXom/outreach-cli.git
    cd outreach-cli
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
@@ -72,8 +74,8 @@ The application relies on environment variables for secure credential management
 ```env
 OCEANIO_API_TOKEN="your_ocean_token_here"
 PROSPEO_API_TOKEN="your_prospeo_token_here"
-EAZYREACH_CLIENT_ID="your_eazyreach_id"
-EAZYREACH_CLIENT_SECRET="your_eazyreach_secret"
+EAZYREACH_CLIENT_ID="your_eazyreach_id"             # Not needed unless using Eazyreach for fetching email
+EAZYREACH_CLIENT_SECRET="your_eazyreach_secret"     # Not needed unless using Eazyreach for fetching email
 BREVO_API_KEY="your_brevo_api_key_here"
 ```
 
@@ -105,7 +107,7 @@ npm start <company.domain>
    Tyler Durden, Chief Executive Officer at Fight Club Inc
  -> 1 prospects
 
-:: Resolving work emails via Eazyreach...
+:: Resolving work emails...
    Tyler Durden -> tyler@fc.com
  -> 1/1 resolved
 
