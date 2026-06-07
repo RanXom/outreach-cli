@@ -19,7 +19,7 @@ export const findDecisionMakers = async (
             },
           },
           person_seniority: {
-            include: ["C-Level", "VP"],
+            include: ["C-Suite", "Vice President"],
           },
         },
       },
