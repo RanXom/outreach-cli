@@ -4,7 +4,7 @@ import { AuthTokenResponse, LinkedinEmailsResponse } from "../types/index.js";
 
 let cachedToken: string | null = null;
 
-const fetchToken = async (): Promise<string> => {
+export const fetchToken = async (): Promise<string> => {
   if (cachedToken) return cachedToken;
 
   try {
@@ -21,13 +21,13 @@ const fetchToken = async (): Promise<string> => {
       },
     );
 
-    if (response.data?.status !== "success" || !response.data?.auth_token) {
+    if (!response.data?.authToken) {
       throw new Error(
         "Superflow gateway rejected client credential verification properties",
       );
     }
 
-    cachedToken = response.data.auth_token;
+    cachedToken = response.data.authToken;
     return cachedToken;
   } catch (error: any) {
     throw new Error(
@@ -70,7 +70,11 @@ export const fetchEmails = async (
     return bestMatch?.email || null;
   } catch (error: any) {
     console.error(
-      `[Eazyreach Step Drop] Failed resolving target route for ${linkedinUrl}: ${error.message}`,
+      `[Eazyreach Step Drop] Failed resolving target route for ${linkedinUrl}: ${
+        error.response?.data
+          ? JSON.stringify(error.response.data)
+          : error.message
+      }`,
     );
     return null;
   }
