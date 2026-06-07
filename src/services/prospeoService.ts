@@ -62,6 +62,10 @@ export const findDecisionMakers = async (
     const apiDetail =
       error.response?.data?.filter_error || error.response?.data?.error_code;
 
+    if (apiDetail === "NO_RESULTS") {
+      return [];
+    }
+
     throw new Error(`Prospeo execution dropped: ${apiDetail || error.message}`);
   }
 };

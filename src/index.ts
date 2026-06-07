@@ -2,7 +2,7 @@
 import readline from "node:readline";
 import { fetchLookalikes } from "./services/oceanService.js";
 import { findDecisionMakers } from "./services/prospeoService.js";
-import { fetchEmails } from "./services/eazyreachService.js";
+import { enrichEmails } from "./services/prospeoEnrichService.js";
 import { sendBatchOutreach } from "./services/brevoService.js";
 import { Contact, OceanCompany, DiscoveredProspect } from "./types/index.js";
 
@@ -87,16 +87,20 @@ const main = async (): Promise<void> => {
   }
   console.log(` -> ${prospects.length} prospects`);
 
-  // ── Eazyreach ─────────────────────────────────────────────
+  // ── Prospeo Enrich ────────────────────────────────────────
 
   console.log("");
-  console.log(":: Resolving work emails via Eazyreach...");
+  console.log(":: Resolving work emails via Prospeo Enrich...");
+
+  const emailMap = await enrichEmails(prospects).catch((err) =>
+    die(err.message),
+  );
 
   const contacts: Contact[] = [];
   let failed = 0;
 
   for (const prospect of prospects) {
-    const email = await fetchEmails(prospect.linkedinUrl);
+    const email = emailMap.get(prospect.linkedinUrl);
 
     if (email) {
       contacts.push({
