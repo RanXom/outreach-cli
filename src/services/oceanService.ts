@@ -22,13 +22,16 @@ export const fetchLookalikes = async (
       },
     );
 
-    const companies: OceanCompany[] = response.data?.companies || [];
+    const rawResults: any[] = response.data?.companies || [];
 
     const normalizedSeed = seedDomain.toLowerCase().replace(/^www\./, "");
 
     const seen = new Set<string>();
 
-    return companies.flatMap((company) => {
+    return rawResults.flatMap((item) => {
+      const company = item.company;
+      if (!company) return [];
+
       const domain = sanitizeDomain(company);
       if (!domain) return [];
 
