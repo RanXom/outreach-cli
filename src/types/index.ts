@@ -47,8 +47,8 @@ export interface ProspeoSearchResponse {
 
 // Eazyreach service
 export interface AuthTokenResponse {
-  status: string;
-  auth_token: string;
+  affectedRows?: number;
+  authToken: string;
   id: string;
 }
 

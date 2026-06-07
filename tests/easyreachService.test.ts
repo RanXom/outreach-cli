@@ -16,7 +16,7 @@ describe("eazyreachService -> Double Hop Resolution Loop", () => {
   it("should sequentially request an authorization token and hit the email profile route", async () => {
     vi.mocked(axios.post)
       .mockResolvedValueOnce({
-        data: { status: "success", auth_token: "mock_jwt_token", id: "123" },
+        data: { authToken: "mock_jwt_token", id: "123" },
       })
       .mockResolvedValueOnce({
         data: {
@@ -59,7 +59,7 @@ describe("eazyreachService -> Double Hop Resolution Loop", () => {
     vi.mocked(axios.post)
       // First call: token + email lookup
       .mockResolvedValueOnce({
-        data: { status: "success", auth_token: "cached_token" },
+        data: { authToken: "cached_token" },
       })
       .mockResolvedValueOnce({
         data: {
@@ -85,7 +85,7 @@ describe("eazyreachService -> Double Hop Resolution Loop", () => {
   it("should favor a 'verified' row even if it is placed later in the data response collection array", async () => {
     vi.mocked(axios.post)
       .mockResolvedValueOnce({
-        data: { status: "success", auth_token: "valid" },
+        data: { authToken: "valid" },
       })
       .mockResolvedValueOnce({
         data: {
@@ -104,7 +104,7 @@ describe("eazyreachService -> Double Hop Resolution Loop", () => {
   it("should fallback cleanly to the first available record if no 'verified' record exists", async () => {
     vi.mocked(axios.post)
       .mockResolvedValueOnce({
-        data: { status: "success", auth_token: "valid" },
+        data: { authToken: "valid" },
       })
       .mockResolvedValueOnce({
         data: {
@@ -134,7 +134,7 @@ describe("eazyreachService -> Double Hop Resolution Loop", () => {
 
     vi.mocked(axios.post)
       .mockResolvedValueOnce({
-        data: { status: "success", auth_token: "valid" },
+        data: { authToken: "valid" },
       })
       .mockRejectedValueOnce(new Error("404 linkedin profile not found"));
 

@@ -16,8 +16,8 @@ describe("oceanService -> fetchLookalikes", () => {
     const mockApiResponse = {
       data: {
         companies: [
-          { domain: "utterbond.com", name: "Utterbond Inc" },
-          { domain: "rekart.io", name: "Rekart" },
+          { company: { domain: "utterbond.com", name: "Utterbond Inc" } },
+          { company: { domain: "rekart.io", name: "Rekart" } },
         ],
       },
     };
@@ -37,8 +37,8 @@ describe("oceanService -> fetchLookalikes", () => {
     const mockApiResponse = {
       data: {
         companies: [
-          { domain: "subspace.money", name: "Subspace" },
-          { domain: "utterbond.com", name: "Utterbond" },
+          { company: { domain: "subspace.money", name: "Subspace" } },
+          { company: { domain: "utterbond.com", name: "Utterbond" } },
         ],
       },
     };
@@ -54,9 +54,9 @@ describe("oceanService -> fetchLookalikes", () => {
     const mockApiResponse = {
       data: {
         companies: [
-          { domain: "utterbond.com", name: "Utterbond" },
-          { domain: "utterbond.com", name: "Utterbond Inc" },
-          { domain: "rekart.io", name: "Rekart" },
+          { company: { domain: "utterbond.com", name: "Utterbond" } },
+          { company: { domain: "utterbond.com", name: "Utterbond Inc" } },
+          { company: { domain: "rekart.io", name: "Rekart" } },
         ],
       },
     };

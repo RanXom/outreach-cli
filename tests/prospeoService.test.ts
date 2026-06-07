@@ -67,7 +67,7 @@ describe("prospeoService -> findDecisionMakers", () => {
       expect.objectContaining({
         filters: expect.objectContaining({
           person_seniority: {
-            include: ["C-Level", "VP"],
+            include: ["C-Suite", "Vice President"],
           },
         }),
       }),
