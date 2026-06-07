@@ -2,12 +2,32 @@ import axios from "axios";
 import { config } from "../config/apiConfig.js";
 import { MessageVersion, BrevoBatchResponse, Contact } from "../types/index.js";
 
+const BREVO_BATCH_LIMIT = 1000;
+
 export const sendBatchOutreach = async (
   contacts: Contact[],
   customSubject?: string,
   customHtmlBody?: string,
 ): Promise<string[]> => {
   if (!contacts || contacts.length === 0) return [];
+
+  const allMessageIds: string[] = [];
+
+  for (let i = 0; i < contacts.length; i += BREVO_BATCH_LIMIT) {
+    const chunk = contacts.slice(i, i + BREVO_BATCH_LIMIT);
+    const ids = await sendChunk(chunk, customSubject, customHtmlBody);
+    allMessageIds.push(...ids);
+  }
+
+  return allMessageIds;
+};
+
+const sendChunk = async (
+  contacts: Contact[],
+  customSubject?: string,
+  customHtmlBody?: string,
+): Promise<string[]> => {
+  const defaultSubject = "Software Engineering Opportunities";
 
   const messageVersions: MessageVersion[] = contacts.map((contact) => {
     const firstName = contact.name.split(" ")[0] || "there";
@@ -43,7 +63,8 @@ export const sendBatchOutreach = async (
     const response = await axios.post<BrevoBatchResponse>(
       `${config.brevo.baseUrl}/smtp/email`,
       {
-        sender: { name: "Shizain", email: config.brevo.senderEmail },
+        sender: { name: config.brevo.senderName, email: config.brevo.senderEmail },
+        subject: customSubject || defaultSubject,
         htmlContent: baseHtmlContent,
         messageVersions: messageVersions,
       },
