@@ -12,10 +12,13 @@ describe("oceanService -> fetchLookalikes", () => {
     vi.clearAllMocks();
   });
 
-  it("should succesfully extract extract company domains", async () => {
+  it("should succesfully extract company domains with names", async () => {
     const mockApiResponse = {
       data: {
-        companies: [{ domain: "utterbond.com" }, { domain: "rekart.io" }],
+        companies: [
+          { domain: "utterbond.com", name: "Utterbond Inc" },
+          { domain: "rekart.io", name: "Rekart" },
+        ],
       },
     };
 
@@ -23,8 +26,48 @@ describe("oceanService -> fetchLookalikes", () => {
 
     const result = await fetchLookalikes("subspace.money");
 
-    expect(result).toEqual(["utterbond.com", "rekart.io"]);
+    expect(result).toEqual([
+      { domain: "utterbond.com", name: "Utterbond Inc" },
+      { domain: "rekart.io", name: "Rekart" },
+    ]);
     expect(axios.post).toHaveBeenCalledTimes(1);
+  });
+
+  it("should exclude the seed domain from results", async () => {
+    const mockApiResponse = {
+      data: {
+        companies: [
+          { domain: "subspace.money", name: "Subspace" },
+          { domain: "utterbond.com", name: "Utterbond" },
+        ],
+      },
+    };
+
+    vi.mocked(axios.post).mockResolvedValue(mockApiResponse);
+
+    const result = await fetchLookalikes("subspace.money");
+
+    expect(result).toEqual([{ domain: "utterbond.com", name: "Utterbond" }]);
+  });
+
+  it("should deduplicate domains", async () => {
+    const mockApiResponse = {
+      data: {
+        companies: [
+          { domain: "utterbond.com", name: "Utterbond" },
+          { domain: "utterbond.com", name: "Utterbond Inc" },
+          { domain: "rekart.io", name: "Rekart" },
+        ],
+      },
+    };
+
+    vi.mocked(axios.post).mockResolvedValue(mockApiResponse);
+
+    const result = await fetchLookalikes("seed.com");
+
+    expect(result).toHaveLength(2);
+    expect(result[0]!.domain).toBe("utterbond.com");
+    expect(result[1]!.domain).toBe("rekart.io");
   });
 });
 

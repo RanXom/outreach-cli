@@ -21,6 +21,7 @@ describe("prospeoService -> findDecisionMakers", () => {
               current_job_title: "Chief Executive Officer",
               linkedin_url: "https://linkedin.com/in/tyler-durden",
             },
+            company: { name: "Fight Club Inc", domain: "fc.com" },
           },
           {
             person: {
@@ -47,11 +48,15 @@ describe("prospeoService -> findDecisionMakers", () => {
         name: "Tyler Durden",
         title: "Chief Executive Officer",
         linkedinUrl: "https://linkedin.com/in/tyler-durden",
+        company: "Fight Club Inc",
+        companyDomain: "fc.com",
       },
       {
         name: "Executive Target",
         title: "Leadership Matrix Target",
         linkedinUrl: "https://linkedin.com/in/anonymous-exec",
+        company: undefined,
+        companyDomain: undefined,
       },
     ]);
 
@@ -59,7 +64,13 @@ describe("prospeoService -> findDecisionMakers", () => {
 
     expect(axios.post).toHaveBeenCalledWith(
       expect.any(String),
-      expect.any(Object),
+      expect.objectContaining({
+        filters: expect.objectContaining({
+          person_seniority: {
+            include: ["C-Level", "VP"],
+          },
+        }),
+      }),
       expect.objectContaining({
         headers: {
           "X-KEY": expect.any(String),
@@ -67,6 +78,36 @@ describe("prospeoService -> findDecisionMakers", () => {
         },
       }),
     );
+  });
+
+  it("should deduplicate prospects by LinkedIn URL", async () => {
+    const mockApiResponse = {
+      data: {
+        error: false,
+        results: [
+          {
+            person: {
+              full_name: "Tyler Durden",
+              current_job_title: "CEO",
+              linkedin_url: "https://linkedin.com/in/tyler-durden",
+            },
+          },
+          {
+            person: {
+              full_name: "Tyler Durden Copy",
+              current_job_title: "CEO",
+              linkedin_url: "https://linkedin.com/in/tyler-durden",
+            },
+          },
+        ],
+      },
+    };
+
+    vi.mocked(axios.post).mockResolvedValue(mockApiResponse);
+
+    const result = await findDecisionMakers(["fc.com"]);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.name).toBe("Tyler Durden");
   });
 
   it("should handle structural validation errors returned inside successful HTTP blocks gracefully", async () => {

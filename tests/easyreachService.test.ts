@@ -1,12 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import axios from "axios";
-import { fetchEmails } from "../src/services/eazyreachService.ts";
+import {
+  fetchEmails,
+  resetToken,
+} from "../src/services/eazyreachService.ts";
 
 vi.mock("axios");
 
 describe("eazyreachService -> Double Hop Resolution Loop", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    resetToken();
   });
 
   it("should sequentially request an authorization token and hit the email profile route", async () => {
@@ -49,6 +53,33 @@ describe("eazyreachService -> Double Hop Resolution Loop", () => {
         },
       }),
     );
+  });
+
+  it("should reuse cached token on subsequent calls instead of requesting a new one", async () => {
+    vi.mocked(axios.post)
+      // First call: token + email lookup
+      .mockResolvedValueOnce({
+        data: { status: "success", auth_token: "cached_token" },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          status: "success",
+          emails: [{ email: "a@test.com", verification: "verified" }],
+        },
+      })
+      // Second call: only email lookup (token is cached)
+      .mockResolvedValueOnce({
+        data: {
+          status: "success",
+          emails: [{ email: "b@test.com", verification: "verified" }],
+        },
+      });
+
+    await fetchEmails("www.linkedin.com/in/first");
+    await fetchEmails("www.linkedin.com/in/second");
+
+    // 1 token request + 2 email lookups = 3 total (not 4)
+    expect(axios.post).toHaveBeenCalledTimes(3);
   });
 
   it("should favor a 'verified' row even if it is placed later in the data response collection array", async () => {

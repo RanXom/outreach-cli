@@ -41,6 +41,7 @@ describe("brevoService -> sendBatchOutreach", () => {
     expect(axios.post).toHaveBeenLastCalledWith(
       expect.stringContaining("/smtp/email"),
       expect.objectContaining({
+        subject: expect.any(String),
         htmlContent: expect.any(String),
         messageVersions: expect.arrayContaining([
           expect.objectContaining({
@@ -50,6 +51,44 @@ describe("brevoService -> sendBatchOutreach", () => {
       }),
       expect.any(Object),
     );
+  });
+
+  it("should include a top-level subject in the request body", async () => {
+    vi.mocked(axios.post).mockResolvedValue({
+      data: { messageIds: ["id@smtp"] },
+    });
+
+    await sendBatchOutreach([
+      { name: "X", title: "Y", company: "Z", email: "x@z.com" },
+    ]);
+
+    const payload = vi.mocked(axios.post).mock.calls[0]![1] as any;
+    expect(payload.subject).toBeDefined();
+    expect(typeof payload.subject).toBe("string");
+  });
+
+  it("should chunk contacts into batches of 1000", async () => {
+    vi.mocked(axios.post).mockResolvedValue({
+      data: { messageIds: ["id@smtp"] },
+    });
+
+    const contacts = Array.from({ length: 1500 }, (_, i) => ({
+      name: `Person ${i}`,
+      title: "VP",
+      company: `company${i}.com`,
+      email: `p${i}@company${i}.com`,
+    }));
+
+    await sendBatchOutreach(contacts);
+
+    // 1500 contacts = 2 chunks (1000 + 500)
+    expect(axios.post).toHaveBeenCalledTimes(2);
+
+    const firstPayload = vi.mocked(axios.post).mock.calls[0]![1] as any;
+    const secondPayload = vi.mocked(axios.post).mock.calls[1]![1] as any;
+
+    expect(firstPayload.messageVersions).toHaveLength(1000);
+    expect(secondPayload.messageVersions).toHaveLength(500);
   });
 
   it("should bubble up raw validation drop metrics if remote relays reject payload properties", async () => {
