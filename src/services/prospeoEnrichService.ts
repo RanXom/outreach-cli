@@ -21,6 +21,7 @@ const delay = (ms: number): Promise<void> =>
 
 export const enrichEmails = async (
   prospects: DiscoveredProspect[],
+  onProgress?: (name: string) => void,
 ): Promise<Map<string, string>> => {
   if (!prospects || prospects.length === 0) return new Map();
 
@@ -29,6 +30,8 @@ export const enrichEmails = async (
   for (let i = 0; i < prospects.length; i++) {
     const prospect = prospects[i]!;
     if (!prospect.linkedinUrl) continue;
+
+    if (onProgress) onProgress(prospect.name);
 
     // Respect 1 req/sec rate limit — skip delay on first request
     if (i > 0) await delay(1100);
@@ -51,9 +54,6 @@ export const enrichEmails = async (
       );
 
       if (response.data?.error) {
-        console.error(
-          `   [skip] ${prospect.name}: ${response.data.error_code || "no match"}`,
-        );
         continue;
       }
 
@@ -63,9 +63,7 @@ export const enrichEmails = async (
         emailMap.set(prospect.linkedinUrl, email.email);
       }
     } catch (error: any) {
-      console.error(
-        `   [skip] ${prospect.name}: ${error.response?.data?.error_code || error.message}`,
-      );
+      // Silently skip on error to allow pipeline to continue
     }
   }
 

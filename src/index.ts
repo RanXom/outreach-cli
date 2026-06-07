@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import readline from "node:readline";
+import ora from "ora";
 import { fetchLookalikes } from "./services/oceanService.js";
 import { findDecisionMakers } from "./services/prospeoService.js";
 import { enrichEmails } from "./services/prospeoEnrichService.js";
@@ -44,11 +45,16 @@ const main = async (): Promise<void> => {
   // ── Ocean.io ──────────────────────────────────────────────
 
   console.log("");
-  console.log(":: Sourcing lookalike companies via Ocean.io...");
+  const oceanSpinner = ora("Sourcing lookalike companies via Ocean.io...").start();
 
   const companies: OceanCompany[] = await fetchLookalikes(seedDomain).catch(
-    (err) => die(err.message),
+    (err) => {
+      oceanSpinner.fail("Ocean.io search failed");
+      return die(err.message);
+    }
   );
+
+  oceanSpinner.succeed("Lookalike companies sourced");
 
   if (companies.length === 0) {
     console.log("   no lookalike companies found -- nothing to do");
@@ -65,7 +71,7 @@ const main = async (): Promise<void> => {
   // ── Prospeo ───────────────────────────────────────────────
 
   console.log("");
-  console.log(":: Finding decision-makers via Prospeo...");
+  const prospeoSpinner = ora("Finding decision-makers via Prospeo...").start();
 
   const domains = companies
     .map((c) => c.domain)
@@ -73,7 +79,12 @@ const main = async (): Promise<void> => {
 
   const prospects: DiscoveredProspect[] = await findDecisionMakers(
     domains,
-  ).catch((err) => die(err.message));
+  ).catch((err) => {
+    prospeoSpinner.fail("Prospeo search failed");
+    return die(err.message);
+  });
+
+  prospeoSpinner.succeed("Decision-makers found");
 
   if (prospects.length === 0) {
     console.log("   no decision-makers found -- nothing to do");
@@ -90,11 +101,16 @@ const main = async (): Promise<void> => {
   // ── Prospeo Enrich ────────────────────────────────────────
 
   console.log("");
-  console.log(":: Resolving work emails via Prospeo Enrich...");
+  const spinner = ora("Initializing email enrichment...").start();
 
-  const emailMap = await enrichEmails(prospects).catch((err) =>
-    die(err.message),
-  );
+  const emailMap = await enrichEmails(prospects, (name) => {
+    spinner.text = `Resolving work email for ${name}...`;
+  }).catch((err) => {
+    spinner.fail("Email resolution failed");
+    return die(err.message);
+  });
+
+  spinner.succeed("Email enrichment complete");
 
   const contacts: Contact[] = [];
   let failed = 0;
