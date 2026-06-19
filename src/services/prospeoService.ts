@@ -46,6 +46,35 @@ const isRelevantTitle = (title: string): boolean => {
   return ALLOWED_TITLE_KEYWORDS.some((keyword) => normalized.includes(keyword));
 };
 
+const scoreTitle = (title: string): number => {
+  const t = title.toLowerCase();
+
+  if (t.includes("cto")) return 100;
+  if (t.includes("cpto")) return 95;
+
+  if (t.includes("founder")) return 90;
+  if (t.includes("co-founder")) return 90;
+
+  if (t.includes("ceo")) return 85;
+  if (t.includes("cpo")) return 85;
+
+  if (t.includes("head of engineering")) return 80;
+  if (t.includes("director of engineering")) return 75;
+
+  if (t.includes("engineering manager")) return 70;
+  if (t.includes("lead software engineer")) return 65;
+
+  if (t.includes("developer relations")) return 60;
+  if (t.includes("developer advocacy")) return 55;
+
+  if (t.includes("hr")) return 50;
+  if (t.includes("talent")) return 50;
+
+  if (t.includes("product manager")) return 40;
+
+  return 10;
+};
+
 export const findDecisionMakers = async (
   domains: string[],
 ): Promise<DiscoveredProspect[]> => {
@@ -99,31 +128,83 @@ export const findDecisionMakers = async (
 
     const seen = new Set<string>();
 
-    return searchResults.flatMap((item) => {
+    const prospects: DiscoveredProspect[] = searchResults.flatMap((item) => {
       const p = item.person;
       const linkedinUrl = p.linkedin_url || "";
-      const title = p?.current_job_title || "";
+      const title = p.current_job_title || "";
 
       if (!linkedinUrl) return [];
+
       if (!isRelevantTitle(title)) {
         console.log(`[FILTERED] ${title}`);
         return [];
       }
 
       const normalizedUrl = linkedinUrl.toLowerCase();
+
       if (seen.has(normalizedUrl)) return [];
       seen.add(normalizedUrl);
 
       return [
         {
           name: p.full_name || "Executive Target",
-          title: p.current_job_title || "Leadership Matrix Target",
+          title,
           linkedinUrl,
           company: item.company?.name,
           companyDomain: item.company?.domain,
         },
       ];
     });
+
+    const grouped = new Map<string, DiscoveredProspect[]>();
+
+    for (const prospect of prospects) {
+      const company = prospect.companyDomain || prospect.company || "unknown";
+
+      if (!grouped.has(company)) {
+        grouped.set(company, []);
+      }
+
+      grouped.get(company)!.push(prospect);
+    }
+
+    const finalProspects: DiscoveredProspect[] = [];
+
+    for (const [, companyProspects] of grouped) {
+      companyProspects.sort(
+        (a, b) => scoreTitle(b.title) - scoreTitle(a.title),
+      );
+
+      finalProspects.push(...companyProspects.slice(0, 2));
+    }
+
+    return finalProspects;
+
+    // return searchResults.flatMap((item) => {
+    //   const p = item.person;
+    //   const linkedinUrl = p.linkedin_url || "";
+    //   const title = p?.current_job_title || "";
+    //
+    //   if (!linkedinUrl) return [];
+    //   if (!isRelevantTitle(title)) {
+    //     console.log(`[FILTERED] ${title}`);
+    //     return [];
+    //   }
+    //
+    //   const normalizedUrl = linkedinUrl.toLowerCase();
+    //   if (seen.has(normalizedUrl)) return [];
+    //   seen.add(normalizedUrl);
+    //
+    //   return [
+    //     {
+    //       name: p.full_name || "Executive Target",
+    //       title: p.current_job_title || "Leadership Matrix Target",
+    //       linkedinUrl,
+    //       company: item.company?.name,
+    //       companyDomain: item.company?.domain,
+    //     },
+    //   ];
+    // });
   } catch (error: any) {
     const apiDetail =
       error.response?.data?.filter_error || error.response?.data?.error_code;
