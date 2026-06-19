@@ -37,24 +37,49 @@ const sendChunk = async (
         firstName: firstName,
         company: contact.company,
       },
-      subject:
-        customSubject ||
-        `Software Engineering Opportunities - ${contact.company}`,
+      subject: customSubject || `Software Engineering Internship Inquiry`,
     };
   });
 
   const baseHtmlContent =
     customHtmlBody ||
     `
-     <!DOCTYPE html>
+    <!DOCTYPE html>
     <html>
     <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #222; max-width: 600px; margin: 0 auto;">
-      <p>Hey {{params.firstName}},</p>
-      <p>I was recently tracking engineering and product scaling footprints over at <strong>{{params.company}}</strong>, and I wanted to reach out directly.</p>
-      <p>I am a self-driven B.Tech CSE student heavily focused on core backend architecture, distributed systems patterns, and cloud infrastructure operations. I spend my time building high-throughput infrastructure components (like custom CLI system logging utilities written in Rust and scalable microservice architectures using Java + Spring Boot).</p>
-      <p>Given your focus on product stability and system scaling execution speeds, I believe my technical focus and absolute dedication to system efficiency would make me an excellent fit for your engineering team as a Software Engineer Intern.</p>
-      <p>Are you open to a brief 5-minute chat sometime next week? I'd love to share some of the backend automation systems I've built and see how I can help ship high-quality code for your team.</p>
-      <p>Best regards,<br><strong>Saiyed Shizain</strong><br>Computer Science & Systems Engineering Student<br>Portfolio: shizain.me</p>
+
+      <p>Hi {{params.firstName}},</p>
+
+      <p>
+        My name is Saiyed Shizain, and I'm a Computer Science student with a strong interest in backend engineering, systems programming, and cloud infrastructure.
+      </p>
+
+      <p>
+        Recently, I've been building projects including an enterprise Identity & Access Management platform using Java, Spring Boot, Redis, and PostgreSQL, as well as a minimal x86 operating system kernel in Rust.
+      </p>
+
+      <p>
+        I came across <strong>{{params.company}}</strong> while researching companies building developer-focused products and infrastructure, and I wanted to reach out.
+      </p>
+
+      <p>
+        I'm currently looking for Software Engineering internship opportunities where I can contribute, learn from experienced engineers, and continue growing as a backend developer.
+      </p>
+
+      <p>
+        If there are any internship opportunities available, I'd be grateful for the chance to share my work and learn more about your team.
+      </p>
+
+      <p>
+        Portfolio: <a href="https://shizain.me">shizain.me</a><br>
+        GitHub: <a href="https://github.com/ranxom">github.com/ranxom</a>
+      </p>
+
+      <p>
+        Best regards,<br>
+        <strong>Saiyed Shizain</strong>
+      </p>
+
     </body>
     </html>
   `;
