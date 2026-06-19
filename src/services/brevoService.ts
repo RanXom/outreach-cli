@@ -54,7 +54,7 @@ const sendChunk = async (
       <p>I am a self-driven B.Tech CSE student heavily focused on core backend architecture, distributed systems patterns, and cloud infrastructure operations. I spend my time building high-throughput infrastructure components (like custom CLI system logging utilities written in Rust and scalable microservice architectures using Java + Spring Boot).</p>
       <p>Given your focus on product stability and system scaling execution speeds, I believe my technical focus and absolute dedication to system efficiency would make me an excellent fit for your engineering team as a Software Engineer Intern.</p>
       <p>Are you open to a brief 5-minute chat sometime next week? I'd love to share some of the backend automation systems I've built and see how I can help ship high-quality code for your team.</p>
-      <p>Best regards,<br><strong>Saiyed Shizain</strong><br>Computer Science & Systems Engineering Student<br>GitHub: github.com/RanXom</p>
+      <p>Best regards,<br><strong>Saiyed Shizain</strong><br>Computer Science & Systems Engineering Student<br>Portfolio: shizain.me</p>
     </body>
     </html>
   `;
@@ -63,7 +63,10 @@ const sendChunk = async (
     const response = await axios.post<BrevoBatchResponse>(
       `${config.brevo.baseUrl}/smtp/email`,
       {
-        sender: { name: config.brevo.senderName, email: config.brevo.senderEmail },
+        sender: {
+          name: config.brevo.senderName,
+          email: config.brevo.senderEmail,
+        },
         subject: customSubject || defaultSubject,
         htmlContent: baseHtmlContent,
         messageVersions: messageVersions,
